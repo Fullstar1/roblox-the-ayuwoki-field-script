@@ -6,9 +6,9 @@ Rayfield:Notify({
    Image = "vibrate",
 })
 local main = Rayfield:CreateWindow({
-   Name = "Ayucocky Private",
+   Name = "Ayucocky Keyless",
    Icon = "square-user", -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Only given to uhh... idk",
+   LoadingTitle = "I woke up...",
    LoadingSubtitle = "by TritiDium",
    ShowText = "Ayucocky", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
