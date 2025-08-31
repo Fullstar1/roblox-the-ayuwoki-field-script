@@ -1,59 +1,58 @@
+getgenv().espPlayers = false
+getgenv().espAyuwoki = false
+getgenv().fullbright = false
+local distance
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 Rayfield:Notify({
-   Title = "Changelog: 1.0",
-   Content = "Added basic functions: Distance, Ayuwoki ESP, Player ESP, Fullbright",
+   Title = "Changelog: 1.1",
+   Content = "Made the code less complex. Yeah, that's it.",
    Duration = 6,
    Image = "vibrate",
 })
 local main = Rayfield:CreateWindow({
    Name = "Ayucocky Keyless",
-   Icon = "square-user", -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   Icon = "square-user",
    LoadingTitle = "I woke up...",
    LoadingSubtitle = "by TritiDium",
-   ShowText = "Ayucocky", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+   ShowText = "Ayucocky",
+   Theme = "Default",
 
-   ToggleUIKeybind = "H", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+   ToggleUIKeybind = "H",
 
    DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+   DisableBuildWarnings = false,
 
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
+      FolderName = "tritidiumscripts",
       FileName = "ayucocky"
    },
 
    Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
    },
 
-   KeySystem = false, -- Set this to true to use our key system
+   KeySystem = false,
    KeySettings = {
       Title = "Untitled",
       Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
    }
 })
 
-local firstTab = main:CreateTab("Game", 4483362458) -- Title, Image
+local firstTab = main:CreateTab("Game", 4483362458)
 local timerSection = firstTab:CreateSection("time")
 local distSection = firstTab:CreateSection("distance")
-local esp
-local plrEsp
-local distance
-local espEnabled = false
-local plrEspEnabled = false
-local bright = false
 local lastErrorTime = {}
+
 local healthPercent
-local function addPlayersToESP()
+local function playerEsp()
     for i,v in pairs(game.Players:GetPlayers()) do
         if v.Character and v:HasAppearanceLoaded() then
             if v.Character:FindFirstChild("Humanoid") then
@@ -69,7 +68,7 @@ local function addPlayersToESP()
                 plrEsp.Adornee = v.Character
             else
                 if healthPercent ~= nil and v.Character:FindFirstChild("plrESP") then
-                    v.Character:FindFirstChild("plrESP").Enabled = plrEspEnabled
+                    v.Character:FindFirstChild("plrESP").Enabled = getgenv().espPlayers
                     if v.Character:FindFirstChild("Humanoid") then
                         if v.Character.Humanoid.Health <= 0 then
                             v.Character:FindFirstChild("plrESP").FillColor = Color3.new(0, 0, 0)
@@ -111,45 +110,33 @@ local infoDiv = firstTab:CreateDivider()
 local espAyuwoki = firstTab:CreateToggle({
    Name = "Ayuwoki ESP",
    CurrentValue = false,
-   Flag = "esp1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "esp1",
    Callback = function(Value)
-       espEnabled = Value
+       getgenv().espAyuwoki = Value
    end,
 })
 local espPlayers = firstTab:CreateToggle({
    Name = "Player ESP",
    CurrentValue = false,
-   Flag = "esp2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "esp2",
    Callback = function(Value)
-       plrEspEnabled = Value
+       getgenv().espPlayers = Value
    end,
 })
 local fullbrightBtn = firstTab:CreateToggle({
    Name = "Fullbright",
    CurrentValue = false,
-   Flag = "fullbright", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "fullbright",
    Callback = function(Value)
-       bright = Value
+       getgenv().fullbright = Value
    end,
 })
-game.Workspace.ChildAdded:Connect(function(child)
-    if child.Name == "Ayuwoki" then
-        if not child:FindFirstChild("AyuwokiESP") then
-            print("No ESP present, recreating...")
-            esp = Instance.new("Highlight")
-            esp.Parent = child
-            esp.Name = "AyuwokiESP"
-            esp.Adornee = child
-            esp.Enabled = espEnabled
-        end
-    end
-end)
 local distErrorCount = 0
 local lastDistErrorTime = 0
 local distCooldownUntil = 0
 
 game:GetService("RunService").RenderStepped:Connect(function()
-    if bright then
+    if getgenv().fullbright == true then
         game.Lighting.ClockTime = 12
         game.Lighting.Ambient = Color3.new(1,1,1)
         game.Lighting.FogEnd = 1000
@@ -162,12 +149,12 @@ game:GetService("RunService").RenderStepped:Connect(function()
     if game.Workspace:FindFirstChild("Ayuwoki") then
         if not game.Workspace:FindFirstChild("Ayuwoki"):FindFirstChild("AyuwokiESP") then
             print("No ESP present, creating new...")
-            local esp = Instance.new("Highlight")
-            esp.Parent = game.Workspace:FindFirstChild("Ayuwoki")
-            esp.Name = "AyuwokiESP"
-            esp.Adornee = game.Workspace:FindFirstChild("Ayuwoki")
+            local ayuwokiEsp = Instance.new("Highlight")
+            ayuwokiEsp.Parent = game.Workspace:FindFirstChild("Ayuwoki")
+            ayuwokiEsp.Name = "AyuwokiESP"
+            ayuwokiEsp.Adornee = game.Workspace:FindFirstChild("Ayuwoki")
         else
-            game.Workspace:FindFirstChild("Ayuwoki"):FindFirstChild("AyuwokiESP").Enabled = espEnabled
+            game.Workspace:FindFirstChild("Ayuwoki"):FindFirstChild("AyuwokiESP").Enabled = getgenv().espAyuwoki
             if game.Players.LocalPlayer.Character and game.Workspace:FindFirstChild("Ayuwoki") then
                 distance = (game.Workspace:FindFirstChild("Ayuwoki"):GetBoundingBox().Position - game.Players.LocalPlayer.Character:GetBoundingBox().Position).Magnitude
             end
@@ -175,13 +162,11 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
         if distance ~= nil then
             distSection:Set("The Ayuwoki is " .. math.round(distance) .. " studs from you")
-            -- сброс счётчика если всё ок
             distErrorCount = 0
         else
             local now = tick()
-            -- проверяем, не находимся ли в 15-секундном кулдауне
             if now >= distCooldownUntil then
-                if now - lastDistErrorTime >= 5 then  -- 5 секунд между сообщениями
+                if now - lastDistErrorTime >= 5 then
                     distErrorCount += 1
                     if distErrorCount < 3 then
                         print("No distance present. The player wasn't loaded or the Ayuwoki doesn't exist yet. Retrying in 5 seconds.")
@@ -198,5 +183,5 @@ game:GetService("RunService").RenderStepped:Connect(function()
         distSection:Set("He's gone.")
     end
 
-    addPlayersToESP()
+    playerEsp()
 end)
