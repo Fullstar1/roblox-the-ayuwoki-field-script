@@ -1,16 +1,20 @@
 getgenv().espPlayers = false
 getgenv().espAyuwoki = false
 getgenv().fullbright = false
+getgenv().stamina = false
+getgenv().args = {
+	[1] = 40
+}
 local distance
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 Rayfield:Notify({
-   Title = "Changelog: 1.1",
-   Content = "Made the code less complex. Yeah, that's it.",
+   Title = "Changelog: 1.2",
+   Content = "Some new QOL functions, nothing much.",
    Duration = 6,
    Image = "vibrate",
 })
 local main = Rayfield:CreateWindow({
-   Name = "Ayucocky Keyless",
+   Name = "Ayucocky Keyless v1.2",
    Icon = "square-user",
    LoadingTitle = "I woke up...",
    LoadingSubtitle = "by TritiDium",
@@ -107,6 +111,29 @@ game.ReplicatedStorage.Values.Rage:GetPropertyChangedSignal("Value"):Connect(fun
     end
 end)
 local infoDiv = firstTab:CreateDivider()
+local infBtn = firstTab:CreateToggle({
+   Name = "Infinite Stamina",
+   CurrentValue = false,
+   Flag = "infstamina",
+   Callback = function(Value)
+       getgenv().stamina = Value
+   end,
+})
+local dmgBtn = firstTab:CreateToggle({
+   Name = "Remove Fall damage",
+   CurrentValue = true,
+   Flag = "dmgevent",
+   Callback = function(Value)
+        if Value and game.ReplicatedStorage.Events:FindFirstChild("TakeDamage") then
+	        game.ReplicatedStorage.Events.TakeDamage:Destroy()
+	    elseif not Value and not game.ReplicatedStorage.Events:FindFirstChild("TakeDamage") then
+		    local event = Instance.new("RemoteEvent")
+			event.Parent = game.ReplicatedStorage.Events
+			event.Name = "TakeDamage"
+	    end
+   end,
+})
+local mainDiv = firstTab:CreateDivider()
 local espAyuwoki = firstTab:CreateToggle({
    Name = "Ayuwoki ESP",
    CurrentValue = false,
@@ -123,6 +150,7 @@ local espPlayers = firstTab:CreateToggle({
        getgenv().espPlayers = Value
    end,
 })
+local espDiv = firstTab:CreateDivider()
 local fullbrightBtn = firstTab:CreateToggle({
    Name = "Fullbright",
    CurrentValue = false,
@@ -135,7 +163,11 @@ local distErrorCount = 0
 local lastDistErrorTime = 0
 local distCooldownUntil = 0
 
+
 game:GetService("RunService").RenderStepped:Connect(function()
+    if getgenv().stamina == true then
+		firesignal(game:GetService("ReplicatedStorage").Events.AddStamina.OnClientEvent, unpack(getgenv().args))
+	end
     if getgenv().fullbright == true then
         game.Lighting.ClockTime = 12
         game.Lighting.Ambient = Color3.new(1,1,1)
